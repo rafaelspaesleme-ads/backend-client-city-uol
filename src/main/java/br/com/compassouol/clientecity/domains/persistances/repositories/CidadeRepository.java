@@ -1,0 +1,9 @@
+package br.com.compassouol.clientecity.domains.persistances.repositories;
+
+import br.com.compassouol.clientecity.domains.entities.Cidade;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface CidadeRepository extends JpaRepository<Cidade, Long> {
+}
