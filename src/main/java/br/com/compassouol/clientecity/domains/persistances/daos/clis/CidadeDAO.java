@@ -11,4 +11,6 @@ public interface CidadeDAO {
     List<Cidade> findAll();
 
     Optional<Cidade> findById(Long id);
+
+    List<Cidade> findAllByNomeContainsAndEstadoContains(String nome, String estado);
 }

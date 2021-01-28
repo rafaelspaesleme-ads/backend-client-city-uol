@@ -47,4 +47,9 @@ public class CidadeDAOImpl implements CidadeDAO {
             return Optional.empty();
         }
     }
+
+    @Override
+    public List<Cidade> findAllByNomeContainsAndEstadoContains(String nome, String estado) {
+        return cidadeRepository.findByNomeContainsAndEstadoContains(nome, estado);
+    }
 }

@@ -18,6 +18,7 @@ public class Cidade {
     private Long id;
     @Column(nullable = false)
     private String nome;
+    @Column(nullable = false)
     private String estado;
     @Column(length = 2)
     private String uf;
