@@ -20,7 +20,12 @@ public class ClienteDAOImpl implements ClienteDAO {
 
     @Override
     public Optional<Cliente> save(Cliente cliente) {
-        return Optional.of(clienteRepository.save(cliente));
+        try {
+            return cliente != null ? Optional.of(clienteRepository.save(cliente)) : Optional.empty();
+        } catch (Exception e) {
+            Logger.getLogger(e.getMessage());
+            return Optional.empty();
+        }
     }
 
     @Override
