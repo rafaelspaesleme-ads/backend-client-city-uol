@@ -172,7 +172,7 @@ public class ClienteControllerTest {
 
         Assert.assertSame("Era para ter atualizado", HttpStatus.OK, updateName.getStatusCode());
         Assert.assertSame("Era para não ter atualizado", HttpStatus.NOT_ACCEPTABLE, notUpdateName.getStatusCode());
-        Assert.assertSame("Era para não ter atualizado", HttpStatus.INTERNAL_SERVER_ERROR, notUpdateNameNull.getStatusCode());
+        Assert.assertSame("Era para não ter atualizado", HttpStatus.NOT_ACCEPTABLE, notUpdateNameNull.getStatusCode());
 
     }
 

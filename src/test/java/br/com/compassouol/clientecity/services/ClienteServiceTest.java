@@ -83,7 +83,7 @@ public class ClienteServiceTest {
 
         Assert.assertTrue("Era para cadastrar cliente", save.get().getData().isPresent());
         Assert.assertTrue("Era para cadastrar cliente", save.get().getData().isPresent());
-        Assert.assertTrue("Era para não cadastrar cliente", notSave.get().getError().isPresent());
+        Assert.assertFalse("Era para não cadastrar cliente", notSave.isPresent());
         Assert.assertFalse("Era para não cadastrar cliente", saveCityNull.isPresent());
         Assert.assertTrue("Era para cadastrar cliente", save.get().getData().get().toString().contains("Rafael Paes cadastrado com sucesso!"));
         Assert.assertTrue("Era para cadastrar cliente", saveCityExist.get().getData().get().toString().contains("Rafael Paes cadastrado com sucesso!"));
@@ -169,7 +169,7 @@ public class ClienteServiceTest {
         Optional<ServiceDTO> updateName = clienteService.updateName(2L, "Rafael Serdeiro Paes Leme");
 
         Assert.assertTrue("Era para retornar um erro.", updateIdNull.get().getError().isPresent());
-        Assert.assertTrue("Não era para atualizar.", updateNameEquals.get().getData().get().toString().contains("Nome esta igual"));
+        Assert.assertTrue("Não era para atualizar.", updateNameEquals.get().getData().get().toString().contains("Você esta inserindo um nome que já existe"));
         Assert.assertFalse("Era para retornar vazio.", updateIdNotPresent.isPresent());
         Assert.assertTrue("Era para atualizar.", updateName.get().getData().get().toString().contains("Rafael Serdeiro atualizado com sucesso!"));
     }

@@ -30,7 +30,7 @@ public class CidadeBuilder {
                 .withNome(cidadeDTO.getNome())
                 .withAtivo(cidadeDTO.getAtivo())
                 .withEstado(cidadeDTO.getEstado())
-                .withUf(estado != null ? estado.getSigla() : null)
+                .withUf(estado != null ? estado.getSigla() : cidadeDTO.getEstado().split("")[0]+cidadeDTO.getEstado().split("")[1])
                 .build();
     }
 
