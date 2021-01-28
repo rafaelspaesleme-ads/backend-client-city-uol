@@ -4,10 +4,11 @@ import br.com.compassouol.clientecity.domains.entities.Cidade;
 import br.com.compassouol.clientecity.domains.entities.Cliente;
 import br.com.compassouol.clientecity.domains.persistances.daos.clis.CidadeDAO;
 import br.com.compassouol.clientecity.domains.persistances.daos.clis.ClienteDAO;
-import br.com.compassouol.clientecity.enums.MethodHttpEnum;
 import br.com.compassouol.clientecity.resources.v1.dtos.ClienteDTO;
 import br.com.compassouol.clientecity.resources.v1.dtos.ServiceDTO;
 import br.com.compassouol.clientecity.services.clis.ClienteService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -24,7 +25,11 @@ import static br.com.compassouol.clientecity.services.builders.ServiceDTOBuilder
 import static br.com.compassouol.clientecity.utils.messages.ClienteMessage.messageSaveOrDeleteOrUpdate;
 
 @Service
+@PropertySource(value = "classpath:messages/messages.properties", encoding = "UTF-8")
 public class ClienteServiceImpl implements ClienteService {
+
+    @Value(value = "${messages.save.service.error.name-client-equals}")
+    private String messageNameClientEquals;
 
     private final ClienteDAO clienteDAO;
     private final CidadeDAO cidadeDAO;
@@ -73,34 +78,14 @@ public class ClienteServiceImpl implements ClienteService {
             List<ClienteDTO> clienteDTOList = new ArrayList<>();
 
             if (nomeCliente != null && idCliente == null) {
-
-                List<Cliente> clientes = clienteDAO.findAll()
-                        .stream()
-                        .filter(cliente -> cliente.getNomeCompleto().contains(nomeCliente))
-                        .collect(Collectors.toList());
-
-                clientes.forEach(cliente -> {
-                    clienteDTOList.add(buildClienteDTO(cliente));
-                });
-
-                return clienteDTOList.size() > 0 ? Optional.of(buildServiceDTO(clienteDTOList, null)) : Optional.empty();
-
-            } else if (nomeCliente == null && idCliente == null) {
-                List<Cliente> clientes = clienteDAO.findAll()
-                        .stream()
-                        .filter(cliente -> cliente.getAtivo().equals(true))
-                        .collect(Collectors.toList());
-
-                clientes.forEach(cliente -> {
-                    clienteDTOList.add(buildClienteDTO(cliente));
-                });
-
-                return clienteDTOList.size() > 0 ? Optional.of(buildServiceDTO(clienteDTOList, null)) : Optional.empty();
-            } else {
-                Optional<Cliente> cliente = clienteDAO.findById(idCliente);
-
-                return cliente.map(value -> buildServiceDTO(buildClienteDTO(value), null));
+                return findByNameContains(nomeCliente, clienteDTOList);
             }
+
+            if (nomeCliente == null && idCliente == null) {
+                return findAllByActive(clienteDTOList);
+            }
+
+            return findById(idCliente);
 
         } catch (Exception e) {
             return Optional.of(buildServiceDTO(null, e.getCause()));
@@ -143,7 +128,7 @@ public class ClienteServiceImpl implements ClienteService {
                     Cliente getCliente = cliente.get();
 
                     if (getCliente.getNomeCompleto().equals(nomeCliente)) {
-                        return Optional.of(buildServiceDTO("Nome esta igual, não haverá necessidade de alteração", null));
+                        return Optional.of(buildServiceDTO(messageNameClientEquals, null));
                     } else {
                         getCliente.setNomeCompleto(nomeCliente);
                         Optional<Cliente> clienteUpdate = clienteDAO.save(getCliente);
@@ -161,5 +146,40 @@ public class ClienteServiceImpl implements ClienteService {
         } catch (Exception e) {
             return Optional.of(buildServiceDTO(null, e.getCause()));
         }
+    }
+
+
+    private Optional<ServiceDTO> findByNameContains(String nomeCliente, List<ClienteDTO> clienteDTOList) {
+
+        List<Cliente> clientes = clienteDAO.findAll()
+                .stream()
+                .filter(cliente -> cliente.getNomeCompleto().contains(nomeCliente))
+                .collect(Collectors.toList());
+
+        clientes.forEach(cliente -> {
+            clienteDTOList.add(buildClienteDTO(cliente));
+        });
+
+        return clienteDTOList.size() > 0 ? Optional.of(buildServiceDTO(clienteDTOList, null)) : Optional.empty();
+    }
+
+    private Optional<ServiceDTO> findAllByActive(List<ClienteDTO> clienteDTOList) {
+
+        List<Cliente> clientes = clienteDAO.findAll()
+                .stream()
+                .filter(cliente -> cliente.getAtivo().equals(true))
+                .collect(Collectors.toList());
+
+        clientes.forEach(cliente -> {
+            clienteDTOList.add(buildClienteDTO(cliente));
+        });
+
+        return clienteDTOList.size() > 0 ? Optional.of(buildServiceDTO(clienteDTOList, null)) : Optional.empty();
+    }
+
+    private Optional<ServiceDTO> findById(Long idCliente) {
+        Optional<Cliente> cliente = clienteDAO.findById(idCliente);
+
+        return cliente.map(value -> buildServiceDTO(buildClienteDTO(value), null));
     }
 }

@@ -56,25 +56,25 @@ public class CidadeServiceImpl implements CidadeService {
             List<CidadeDTO> cidadeDTOList = new ArrayList<>();
 
             if (nomeCidade != null && nomeEstado == null) {
-                return checkCitNotNullAndStateNull(nomeCidade, cidadeDTOList);
+                return findAllByNameContains(nomeCidade, cidadeDTOList);
             }
 
             if (nomeCidade == null && nomeEstado != null) {
-                return checkCityNullAndStateNotNull(nomeEstado, cidadeDTOList);
+                return findAllByStateContains(nomeEstado, cidadeDTOList);
             }
 
             if (nomeCidade == null) {
-                return checkCityNullAndStateNull(cidadeDTOList);
+                return findAllByActive(cidadeDTOList);
             }
 
-            return checkCityNotNullAndStateNotNull(nomeCidade, nomeEstado, cidadeDTOList);
+            return findAllByNameContainsAndStateContains(nomeCidade, nomeEstado, cidadeDTOList);
 
         } catch (Exception e) {
             return Optional.of(buildServiceDTO(null, e.getCause()));
         }
     }
 
-    private Optional<ServiceDTO> checkCitNotNullAndStateNull(String nomeCidade, List<CidadeDTO> cidadeDTOList) {
+    private Optional<ServiceDTO> findAllByNameContains(String nomeCidade, List<CidadeDTO> cidadeDTOList) {
 
         List<Cidade> cidades = cidadeDAO.findAll()
                 .stream()
@@ -90,7 +90,7 @@ public class CidadeServiceImpl implements CidadeService {
                 : Optional.empty();
     }
 
-    private Optional<ServiceDTO> checkCityNullAndStateNotNull(String nomeEstado, List<CidadeDTO> cidadeDTOList) {
+    private Optional<ServiceDTO> findAllByStateContains(String nomeEstado, List<CidadeDTO> cidadeDTOList) {
         List<Cidade> cidades = cidadeDAO.findAll()
                 .stream()
                 .filter(cidade -> nomeEstado.length() > 2
@@ -107,7 +107,7 @@ public class CidadeServiceImpl implements CidadeService {
                 : Optional.empty();
     }
 
-    private Optional<ServiceDTO> checkCityNullAndStateNull(List<CidadeDTO> cidadeDTOList) {
+    private Optional<ServiceDTO> findAllByActive(List<CidadeDTO> cidadeDTOList) {
         List<Cidade> cidades = cidadeDAO.findAll()
                 .stream()
                 .filter(cidade -> cidade.getAtivo().equals(true))
@@ -122,7 +122,7 @@ public class CidadeServiceImpl implements CidadeService {
                 : Optional.empty();
     }
 
-    private Optional<ServiceDTO> checkCityNotNullAndStateNotNull(String nomeCidade, String nomeEstado, List<CidadeDTO> cidadeDTOList) {
+    private Optional<ServiceDTO> findAllByNameContainsAndStateContains(String nomeCidade, String nomeEstado, List<CidadeDTO> cidadeDTOList) {
         List<Cidade> cidades = cidadeDAO.findAllByNomeContainsAndEstadoContains(nomeCidade, nomeEstado);
 
         cidades.forEach(cidade -> {
