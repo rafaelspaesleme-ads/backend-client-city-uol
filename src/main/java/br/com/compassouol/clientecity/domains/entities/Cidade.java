@@ -20,7 +20,7 @@ public class Cidade {
     private String nome;
     @Column(nullable = false)
     private String estado;
-    @Column(length = 2)
+    @Column(length = 2, nullable = false)
     private String uf;
     private Boolean ativo;
 }

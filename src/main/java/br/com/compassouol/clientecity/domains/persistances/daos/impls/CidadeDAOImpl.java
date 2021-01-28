@@ -41,7 +41,7 @@ public class CidadeDAOImpl implements CidadeDAO {
     @Override
     public Optional<Cidade> findById(Long id) {
         try {
-            return cidadeRepository.findById(id);
+            return id != null ? cidadeRepository.findById(id) : Optional.empty();
         } catch (Exception e) {
             Logger.getLogger(e.getMessage());
             return Optional.empty();
@@ -50,6 +50,11 @@ public class CidadeDAOImpl implements CidadeDAO {
 
     @Override
     public List<Cidade> findAllByNomeContainsAndEstadoContains(String nome, String estado) {
-        return cidadeRepository.findByNomeContainsAndEstadoContains(nome, estado);
+        try {
+            return nome != null || estado != null ? cidadeRepository.findByNomeContainsAndEstadoContains(nome, estado) : Collections.emptyList();
+        } catch (Exception e) {
+            Logger.getLogger(e.getMessage());
+            return Collections.emptyList();
+        }
     }
 }
