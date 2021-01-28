@@ -16,6 +16,7 @@ public class Cidade {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @EqualsAndHashCode.Include
     private Long id;
+    @Column(nullable = false)
     private String nome;
     private String estado;
     @Column(length = 2)

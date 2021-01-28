@@ -37,7 +37,9 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public Optional<ServiceDTO> save(ClienteDTO clienteDTO) {
         try {
-            Optional<Cidade> cidade = cidadeDAO.findById(clienteDTO.getCidade().getId());
+            Optional<Cidade> cidade = clienteDTO.getCidade() != null
+                    ? cidadeDAO.findById(clienteDTO.getCidade().getId())
+                    : Optional.empty();
 
             if (cidade.isPresent()) {
                 clienteDTO.setCidade(buildCidadeDTO(cidade.get()));
@@ -46,9 +48,12 @@ public class ClienteServiceImpl implements ClienteService {
                 return cliente.map(value -> buildServiceDTO(messageSaveOrDeleteOrUpdate(value.getNomeCompleto(), POST), null));
 
             } else {
-                Optional<Cidade> cidadeSave = cidadeDAO.save(buildCidade(clienteDTO.getCidade()));
+                Optional<Cidade> cidadeSave = cidadeDAO.save(clienteDTO.getCidade() != null
+                        ? buildCidade(clienteDTO.getCidade())
+                        : null);
 
                 if (cidadeSave.isPresent()) {
+                    clienteDTO.setCidade(buildCidadeDTO(cidadeSave.get()));
                     Optional<Cliente> cliente = clienteDAO.save(buildCliente(clienteDTO));
 
                     return cliente.map(value -> buildServiceDTO(messageSaveOrDeleteOrUpdate(value.getNomeCompleto(), POST), null));
@@ -105,18 +110,22 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public Optional<ServiceDTO> deleteById(Long idCliente) {
         try {
-            Optional<Cliente> cliente = clienteDAO.findById(idCliente);
+            if (idCliente != null) {
+                Optional<Cliente> cliente = clienteDAO.findById(idCliente);
 
-            if (cliente.isPresent()) {
-                Boolean deleteCliente = clienteDAO.deleteCliente(cliente.get());
+                if (cliente.isPresent()) {
+                    Boolean deleteCliente = clienteDAO.deleteCliente(cliente.get());
 
-                if (deleteCliente) {
-                    return Optional.of(buildServiceDTO(messageSaveOrDeleteOrUpdate(cliente.get().getNomeCompleto(), DELETE), null));
+                    if (deleteCliente) {
+                        return Optional.of(buildServiceDTO(messageSaveOrDeleteOrUpdate(cliente.get().getNomeCompleto(), DELETE), null));
+                    } else {
+                        return Optional.of(buildServiceDTO(null, new Throwable(new HttpClientErrorException(HttpStatus.UNAUTHORIZED)).getCause()));
+                    }
                 } else {
-                    return Optional.of(buildServiceDTO(null, new Throwable(new HttpClientErrorException(HttpStatus.UNAUTHORIZED)).getCause()));
+                    return Optional.empty();
                 }
             } else {
-                return Optional.empty();
+                return Optional.of(buildServiceDTO(null, new NullPointerException()));
             }
 
         } catch (Exception e) {

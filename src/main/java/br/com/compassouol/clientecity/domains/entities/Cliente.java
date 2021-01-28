@@ -18,6 +18,7 @@ public class Cliente {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @EqualsAndHashCode.Include
     private Long id;
+    @Column(nullable = false)
     private String nomeCompleto;
     @Enumerated(EnumType.STRING)
     private SexoEnum sexo;

@@ -21,7 +21,7 @@ public class CidadeDAOImpl implements CidadeDAO {
     @Override
     public Optional<Cidade> save(Cidade cidade) {
         try {
-            return Optional.of(cidadeRepository.save(cidade));
+            return cidade != null ? Optional.of(cidadeRepository.save(cidade)) : Optional.empty();
         } catch (Exception e) {
             Logger.getLogger(e.getMessage());
             return Optional.empty();

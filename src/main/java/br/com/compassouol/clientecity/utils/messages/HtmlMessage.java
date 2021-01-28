@@ -24,7 +24,7 @@ public class HtmlMessage {
                 "<body>" +
                 "<div style='padding=50px;text-align=justify;font-family: Tahoma, sans-serif;'>" +
                 "<h1>" +
-                "Bem vindo ao " + NAME_API + " - v" + VERSION_API + "" +
+                "BEM VINDO AO " + NAME_API.toUpperCase() + " - v" + VERSION_API + "" +
                 "</h1>" +
                 "<br/>" +
                 "<p>" + DESCRIPTION_API + "</p>" +
