@@ -136,15 +136,26 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public Optional<ServiceDTO> updateName(Long idCliente, String nomeCliente) {
         try {
-            Optional<Cliente> cliente = clienteDAO.findById(idCliente);
-            if (cliente.isPresent()) {
-                Cliente getCliente = cliente.get();
-                getCliente.setNomeCompleto(nomeCliente);
-                Optional<Cliente> clienteUpdate = clienteDAO.save(getCliente);
+            if (idCliente != null) {
 
-                return clienteUpdate.map(value -> buildServiceDTO(messageSaveOrDeleteOrUpdate(value.getNomeCompleto(), PATCH), null));
+                Optional<Cliente> cliente = clienteDAO.findById(idCliente);
+                if (cliente.isPresent()) {
+                    Cliente getCliente = cliente.get();
+
+                    if (getCliente.getNomeCompleto().equals(nomeCliente)) {
+                        return Optional.of(buildServiceDTO("Nome esta igual, não haverá necessidade de alteração", null));
+                    } else {
+                        getCliente.setNomeCompleto(nomeCliente);
+                        Optional<Cliente> clienteUpdate = clienteDAO.save(getCliente);
+                        return clienteUpdate.map(value -> buildServiceDTO(messageSaveOrDeleteOrUpdate(value.getNomeCompleto(), PATCH), null));
+                    }
+
+                } else {
+                    return Optional.empty();
+                }
+
             } else {
-                return Optional.empty();
+                return Optional.of(buildServiceDTO(null, new NullPointerException()));
             }
 
         } catch (Exception e) {
